@@ -1,19 +1,17 @@
 import React, { FunctionComponent, useState } from 'react'
-import { useSignupUserMutation } from '../../features/user/user-api'
-
-import Spinner from '../../common/sharedComponents/Spinner'
-import { useEffect } from 'react'
+import { useSignupMutation } from '../../app/api'
 
 const UserSignup: FunctionComponent = () => {
   const initialState = {
-    username: 'test_user2',
-    first_name: 'test',
-    last_name: 'user2',
-    email: 'test_user2@gmail.com',
-    password: 'testpw09*',
-    password2: 'testpw09*',
+    username: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    password2: '',
   }
-  const [signupUser, { isLoading: isUpdating }] = useSignupUserMutation()
+
+  const [signupUser, { isLoading: isUpdating }] = useSignupMutation()
   const [userData, setUserData] = useState(initialState)
   console.log('isUpdating: ', isUpdating)
 
