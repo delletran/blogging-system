@@ -27,3 +27,4 @@ try.tsx
 src/features/counter
 src/features/dogs
 src/screens/test
+src/routes/PrivateRoute.tsx
