@@ -9,9 +9,9 @@ const axiosApi = axios.create({
 
 axiosApi.interceptors.request.use(
   async (config) => {
-    const accessToken = localStorage.getItem("access")
+    const data = JSON.parse(localStorage.getItem("userCredentials") as string)
     config.headers = {
-      "Authorization": accessToken && `Bearer ${accessToken}`,
+      "Authorization": data.access && `Bearer ${data.access}`,
     } as { Authorization: string }
     return config
   },
@@ -26,7 +26,7 @@ axiosApi.interceptors.response.use(
   },
   (error) => {
     store.dispatch({
-      type: "REQUEST_FAIL",
+      type: "request/rejected",
       message: error.message,
       error: error.response.data,
     })
