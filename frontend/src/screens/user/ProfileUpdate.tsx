@@ -7,7 +7,7 @@ import {
 } from '../../features/user/user-slice'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 
-import { Avatar, Input, Button } from '@mui/material'
+import { Avatar, Button } from '@mui/material'
 import { IUserProfileProps } from './UserProfile'
 // TODO: Change to drag and drop image upload
 // import Dropzone from 'react-dropzone'
@@ -47,7 +47,7 @@ const ProfileUpdateForm = ({ auth, userData: data }: IUserProfileProps) => {
       first_name: data?.first_name || '',
       last_name: data?.last_name || '',
     })
-  }, [data])
+  }, [data, userData])
 
   return (
     <div className='App'>

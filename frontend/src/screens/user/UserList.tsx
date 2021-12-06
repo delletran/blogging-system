@@ -1,9 +1,8 @@
-// import { useEffect } from 'react'
+import { useUsersQuery } from '../../app/api'
 
-import { useUsersQuery, useUserQuery } from '../../app/api'
-
-import Spinner from '../../common/sharedComponents/Spinner'
 import { Auth } from '../../features/auth/auth-slice'
+import Spinner from '../../common/sharedComponents/Spinner'
+import { Button } from '@mui/material'
 
 export interface IUserListProps {
   auth: Auth
@@ -11,7 +10,6 @@ export interface IUserListProps {
 
 function UserList({ auth }: IUserListProps) {
   const { data = [], isFetching: isFetchingUser } = useUsersQuery()
-  const authUser = useUserQuery(auth.username || '').data
 
   return (
     <>
@@ -20,9 +18,8 @@ function UserList({ auth }: IUserListProps) {
       {!isFetchingUser ? (
         data?.map((user) => (
           <div key={user.id}>
-            <p>
-              {user.username}: {user.email} -- {user.is_admin ? 'admin' : ''}
-            </p>
+            {user.username}: {user.email}
+            <Button>{user.is_admin ? 'admin' : ''}</Button>
           </div>
         ))
       ) : (

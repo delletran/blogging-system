@@ -10,7 +10,6 @@ interface UserManagementProps {
 const UserManagement = ({ auth }: UserManagementProps) => {
   return (
     <>
-      <div>UserManagement</div>
       <UserList auth={auth} />
     </>
   )
