@@ -2,10 +2,17 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.utils import tree
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import update_last_login
 
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+    TokenRefreshSerializer,
+    api_settings,
+    RefreshToken
+)
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
+from .models import UserProfile
 User = get_user_model()
 
 
@@ -21,11 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'password2',
-                  'email', 'first_name', 'last_name', 'is_admin']
-        extra_kwargs = {
-            'first_name': {'required': False},
-            'last_name': {'required': False}
-        }
+                  'email', 'is_admin']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -38,8 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
             is_active=True,
             is_admin=False
         )
@@ -47,3 +48,76 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+# class ProfileSerializer(serializers.ModelSerializer):
+#     username = UserSerializer(read_only=True)
+
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email', 'is_admin']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+    # def to_representation(self, value):
+    #     if isinstance(value, UserProfile):
+    #         serializer = ProfileSerializer(value)
+    #     else:
+    #         raise Exception('Unexpected type of tagged object')
+    #     return serializer.data
+
+
+class ObtainTokenPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        # print(User.objects.get(user=self.user))
+        print(self.user.is_admin)
+        data = {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'id': self.user.id,
+            'username': self.user.username,
+            'email': self.user.email,
+            'is_admin': self.user.is_admin
+        }
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, self.user)
+        return data
+
+
+class ObtainTokenRefreshSerializer(TokenRefreshSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = RefreshToken(attrs['refresh'])
+        data = {
+            'access': str(refresh.access_token),
+        }
+        if api_settings.ROTATE_REFRESH_TOKENS:
+            if api_settings.BLACKLIST_AFTER_ROTATION:
+                try:
+                    refresh.blacklist()
+                except AttributeError:
+                    pass
+            refresh.set_jti()
+            refresh.set_exp()
+            data['refresh'] = str(refresh)
+
+        return data
