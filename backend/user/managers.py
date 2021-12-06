@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class CustomUserManager(BaseUserManager):
-    def create_superuser(self, email, username, first_name, last_name, password, **kwargs):
+    def create_superuser(self, email, username, password, **kwargs):
         kwargs.setdefault('is_admin', True)
         kwargs.setdefault('is_staff', True)
         kwargs.setdefault('is_superuser', True)
@@ -15,20 +15,18 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('is_staff must be set True for superuser')
         if kwargs.get('is_superuser') is not True:
             raise ValueError('is_superuser must be set True for superuser')
-        return self.create_user(email, username, first_name, last_name, password, **kwargs)
+        return self.create_user(email, username,  password, **kwargs)
 
-    def create_user(self, email, username, first_name, last_name, password, **kwargs):
-        return self._create_user(email, username, first_name, last_name, password, **kwargs)
+    def create_user(self, email, username, password, **kwargs):
+        return self._create_user(email, username,  password, **kwargs)
 
-    def _create_user(self, email, username, first_name, last_name, password, **kwargs):
+    def _create_user(self, email, username,  password, **kwargs):
         if not email:
             raise ValueError(_('Enter a valid email address'))
         email = self.normalize_email(email)
         user = self.model(
             email=email,
             username=username,
-            first_name=first_name,
-            last_name=last_name,
             **kwargs
         )
         user.set_password(password)
