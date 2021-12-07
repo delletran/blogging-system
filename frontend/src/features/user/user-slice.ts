@@ -66,13 +66,7 @@ const userSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-<<<<<<< Updated upstream
-    setUserData(state, {
-
-    }: PayloadAction<IUserProfileProps>) {
-=======
     setUserData(state, { payload }: PayloadAction<IUserProfileProps>) {
->>>>>>> Stashed changes
     },
   },
   extraReducers: builder => {
