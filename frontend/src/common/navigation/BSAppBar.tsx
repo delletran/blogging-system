@@ -72,8 +72,8 @@ const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
           </Typography>
           <Stack direction='row' spacing={2} sx={{ mr: '5rem' }}>
             {auth.isAuthenticated ? (
-              <Button color='inherit' onClick={() => navigate(`/link`)}>
-                Link
+              <Button color='inherit' onClick={() => navigate(`/blog`)}>
+                Blog
               </Button>
             ) : null}
           </Stack>

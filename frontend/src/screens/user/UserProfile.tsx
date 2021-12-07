@@ -1,6 +1,5 @@
 import React from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
-import { IUpdateFormProps } from '../../app/api'
 import { Auth } from '../../features/auth/auth-slice'
 import { ProfileUpdateForm, ProfileUpdateImage } from './ProfileUpdate'
 import 'react-tabs/style/react-tabs.css'

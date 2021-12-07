@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Auth } from '../features/auth/auth-slice'
-import axios from 'axios';
 
 
 
@@ -10,20 +9,39 @@ export const baseUrl = 'http://127.0.0.1:8000/api'
 // const express = require('express')
 // const app = express()
 export interface IUser {
-  id: number;
-  username: string;
-  email: string;
-  is_admin?: boolean;
-  is_superuser?: boolean;
+  id: number
+  username: string
+  email: string
+  is_admin?: boolean
+  is_superuser?: boolean
 }
 export interface IProfile {
-  id: number;
-  user: number;
-  first_name: string | null;
-  last_name: string | null;
-  avatar?: File;
+  id: number
+  user: number
+  first_name: string | null
+  last_name: string | null
+  avatar?: File
 }
 
+export interface IBlog {
+  id: number
+  title: string
+  description?: string
+  body?: string
+  author: IUser
+  tags?: []
+  slug: string
+  published_at?: Date
+  created_at?: Date
+}
+export interface IBlogForm {
+  title: string
+  description?: string
+  body?: string
+  tags?: []
+  slug: string
+  published_at?: Date
+}
 export interface IUpdateFormProps {
   user: number
   first_name: string
@@ -49,7 +67,7 @@ export const appApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['User', 'Profile', 'Token'],
+  tagTypes: ['User', 'Profile', 'Token', 'Blog'],
   endpoints(builder) {
     return {
       users: builder.query<IUser[], void>({
@@ -78,24 +96,6 @@ export const appApi = createApi({
           method: "PUT",
           body: profileData
         }),
-        invalidatesTags: ['Profile']
-      }),
-      _updateUserProfile: builder.mutation({
-        async queryFn(userData, _queryApi, _extraOptions, fetchWithBQ) {
-          const formData = new FormData();
-          formData.set('user', userData.user);
-          userData.avatar && formData.append('avatar', userData.avatar);
-          formData.append('first_name', userData.first_name);
-          formData.append('last_name', userData.last_name);
-          const response: any = await axios.put(
-            `${baseUrl}/user-profiles/${userData.user}/`, formData, {
-            headers: {
-              'content-type': 'multipart/form-data',
-            },
-          })
-          if (response.error) throw response.error;
-          return response.data ? { data: response.data } : { error: response.error };
-        },
         invalidatesTags: ['Profile']
       }),
       updateUserProfile: builder.mutation({
@@ -129,7 +129,38 @@ export const appApi = createApi({
           method: "POST",
           body: credentials
         }),
-      })
+      }),
+      blogs: builder.query<IBlog[], void>({
+        query: () => `/blogs/`,
+        providesTags: ['Blog']
+      }),
+      blog: builder.query<IBlog, string>({
+        query: (slug = '') => `/blogs/${slug}/`,
+        providesTags: ['Blog']
+      }),
+      blogCreate: builder.mutation<IBlog, IBlogForm>({
+        query: (blogData) => ({
+          url: `/blogs/`,
+          method: "POST",
+          body: blogData
+        }),
+        invalidatesTags: ['Blog']
+      }),
+      blogUpdate: builder.mutation<IBlog, { blogSlug: string, blogData: IBlogForm }>({
+        query: ({ blogSlug, blogData }) => ({
+          url: `/blogs/${blogSlug}/`,
+          method: "PUT",
+          body: blogData
+        }),
+        invalidatesTags: ['Blog']
+      }),
+      blogDelete: builder.mutation<IBlog, string>({
+        query: (blogSlug = '') => ({
+          url: `/blogs/${blogSlug}/`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ['Blog']
+      }),
     }
   },
 })
@@ -142,7 +173,11 @@ export const {
   useSignupMutation,
   useSigninMutation,
   useUpdateProfileMutation,
-  use_updateUserProfileMutation
+  useBlogsQuery,
+  useBlogQuery,
+  useBlogCreateMutation,
+  useBlogUpdateMutation,
+  useBlogDeleteMutation
 } = appApi
 
 export default appApi
