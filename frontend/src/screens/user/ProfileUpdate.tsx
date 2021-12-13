@@ -25,7 +25,7 @@ export interface IUpdateAvatarProps {
 const ProfileUpdateForm = ({ auth, userData: data }: IUserProfileProps) => {
   const { status } = useAppSelector(selectUser)
   const [userData, setData] = useState({
-    user: 1,
+    user: auth.id,
     first_name: data?.first_name || '',
     last_name: data?.last_name || '',
   } as IUpdateFormProps)
@@ -43,11 +43,11 @@ const ProfileUpdateForm = ({ auth, userData: data }: IUserProfileProps) => {
 
   useEffect(() => {
     setData({
-      ...userData,
+      user: auth?.id || 0,
       first_name: data?.first_name || '',
       last_name: data?.last_name || '',
     })
-  }, [data, userData])
+  }, [data, auth])
 
   return (
     <div className='App'>

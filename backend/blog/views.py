@@ -8,7 +8,7 @@ from .serializers import (
 from .models import Blog
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class BlogViewSet(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
-    # lookup_field = 'slug'
+    lookup_field = 'slug'

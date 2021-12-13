@@ -5,13 +5,23 @@ import { Auth } from './../features/auth/auth-slice'
 import AuthRequiredRoute from './AuthRequiredRoute'
 import AdminRequiredRoute from './AdminRequiredRoute'
 
+import { IProfile } from './../app/api'
+
 import { UserSignup, UserSignin } from '../screens/auth'
 import { UserManagement } from '../screens/admin'
 import UserList from './../screens/user/UserList'
 import UserProfile from '../screens/user/UserProfile'
 import Homepage from '../screens/homepage/Homepage'
-import { IProfile } from './../app/api'
+import Blog from '../screens/blog/Blog'
+import {
+  BlogDetails,
+  BlogCreate,
+  BlogUpdate,
+  BlogDelete,
+} from '../screens/blog'
 
+import CKEditorTest from '../screens/test/CKEditorTest'
+import Tinymce from '../screens/test/Tinymce'
 export interface IAppRoutesProps {
   auth: Auth
   userData?: IProfile
@@ -23,6 +33,23 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
       <Route path='/' element={<Homepage />} />
       <Route path='/signup' element={<UserSignup />} />
       <Route path='/signin' element={<UserSignin auth={auth} />} />
+
+      <Route path='/blog' element={<Blog />} />
+      <Route path='/blog/create' element={<BlogCreate />} />
+      <Route path='/blog/:slug' element={<BlogDetails />} />
+      <Route path='/blog/:slug/update' element={<BlogUpdate />} />
+      <Route path='/blog/:slug/delete' element={<BlogDelete />} />
+      <Route
+        path='/blog/create'
+        element={
+          <AdminRequiredRoute auth={auth}>
+            <UserList auth={auth} />
+          </AdminRequiredRoute>
+        }
+      />
+
+      <Route path='/ck-test' element={<CKEditorTest />} />
+      <Route path='/tinymce-test' element={<Tinymce />} />
       <Route
         path='/profile'
         element={

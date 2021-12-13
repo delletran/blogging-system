@@ -51,6 +51,8 @@ INSTALLED_APPS = [
 
     'user',
     'blog',
+    'ckeditor',
+    'ckeditor_uploader',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -145,7 +147,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -163,13 +164,15 @@ SIMPLE_JWT = {
 }
 
 STATIC_URL = '/static/'
-LOCAL_STATIC_CDN_PATH = Path(BASE_DIR, 'static_cdn')
+LOCAL_STATIC_CDN_PATH = Path(BASE_DIR, '../static_cdn')
 
 STATIC_ROOT = Path(LOCAL_STATIC_CDN_PATH, 'static')
 STATICFILES_DIRS = [
-    Path(BASE_DIR, 'staticfiles')
+    Path(BASE_DIR, '../staticfiles')
 ]
 
-
-MEDIA_ROOT = Path(BASE_DIR, 'media')
+MEDIA_ROOT = Path(BASE_DIR, '../media')
 MEDIA_URL = '/media/'
+
+CKEDITOR_UPLOAD_PATH = Path(MEDIA_URL, 'image/')
+# CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"

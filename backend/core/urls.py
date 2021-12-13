@@ -15,6 +15,8 @@ urlpatterns = [
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include('user.urls'), name='users_api'),
+    path('api/', include('blog.urls'), name='blogs_api'),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 
 ]
 
