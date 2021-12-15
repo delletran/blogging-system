@@ -16,9 +16,10 @@ const BlogDelete = () => {
   const handlePostBlog = (blogSlug: string | undefined) => {
     blogSlug !== undefined && deleteBlog(blogSlug)
   }
+
   useEffect(() => {
     isSuccess && setTimeout(() => navigate('/blog'), 1000)
-  }, [isSuccess])
+  }, [isSuccess, navigate])
 
   return (
     <Stack
