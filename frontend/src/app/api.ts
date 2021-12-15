@@ -53,11 +53,14 @@ export interface IBlogForm {
 export interface ICategory {
   id: string
   name: string
+  description: string
   is_active: boolean
+  slug: string
   blog_posts?: IBlog[]
 }
 export interface ICategoryForm {
   name: string
+  description: string
   is_active: boolean
   blog_posts?: []
 }
@@ -185,11 +188,11 @@ export const appApi = createApi({
         invalidatesTags: ['Blog']
       }),
       categories: builder.query<ICategory[], void | string>({
-        query: (name = '') => `/categories/?name=${name}`,
+        query: (name = '') => `/categories/${name}`,
         providesTags: ['Categories']
       }),
       category: builder.query<ICategory, string>({
-        query: () => `categories/`,
+        query: (slug) => `categories/${slug}`,
         providesTags: ['Categories']
       }),
       categoryCreate: builder.mutation<ICategory, ICategoryForm>({
@@ -200,17 +203,17 @@ export const appApi = createApi({
         }),
         invalidatesTags: ['Categories']
       }),
-      categoryUpdate: builder.mutation<ICategory, { id: number, categoryData: ICategoryForm }>({
-        query: ({ id, categoryData }) => ({
-          url: `/categories/${id}/`,
+      categoryUpdate: builder.mutation<ICategory, { slug: string, categoryData: ICategoryForm }>({
+        query: ({ slug, categoryData }) => ({
+          url: `/categories/${slug}/`,
           method: "PUT",
           body: categoryData
         }),
         invalidatesTags: ['Categories']
       }),
-      categoryDelete: builder.mutation<ICategory, number>({
-        query: (id = 0) => ({
-          url: `/categories/${id}/`,
+      categoryDelete: builder.mutation<ICategory, string>({
+        query: (slug = '') => ({
+          url: `/categories/${slug}`,
           method: "DELETE",
         }),
         invalidatesTags: ['Categories']

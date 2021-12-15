@@ -143,7 +143,7 @@ const getAuthUserData = () => {
     clearTimeout(timeout.getAuthTimer)
     timeout.getAuthTimer = setTimeout(() => {
       dispatch(getAuthData())
-    }, timeout.getAuth * 1000)
+    }, timeout.getAuth * 0)
   }
 }
 

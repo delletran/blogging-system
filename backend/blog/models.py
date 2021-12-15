@@ -67,16 +67,21 @@ class Tag(models.Model):
 
 class Category(models.Model):
 
-    name = models.SlugField(_("name"), max_length=120, unique=True)
+    name = models.CharField(max_length=120, unique=True)
     description = models.TextField(
         _("Category description"), blank=True, null=True)
     is_active = models.BooleanField(_("Active category"), default=True)
+    slug = models.SlugField(_("category slug"), blank=True, null=True)
     blog_posts = models.ManyToManyField(
         "Blog", related_name='blog_posts', blank=True)
 
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

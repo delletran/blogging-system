@@ -1,6 +1,5 @@
-// import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { useCategoriesQuery } from '../../../app/api'
+import { useCategoryQuery } from '../../../app/api'
 
 import Spinner from '../../../common/sharedComponents/Spinner'
 import { Stack, Typography } from '@mui/material'
@@ -11,11 +10,7 @@ export interface ICategoryListProps {}
 
 function CategoryBlogList(props: ICategoryListProps) {
   let param = useParams()
-  const { data: categories, isSuccess } = useCategoriesQuery(param?.name || '')
-
-  // useEffect(() => {
-  //   categories && console.log(categories)
-  // }, [isSuccess, categories])
+  const { data: category, isSuccess } = useCategoryQuery(param?.name || '')
 
   return (
     <>
@@ -26,25 +21,36 @@ function CategoryBlogList(props: ICategoryListProps) {
         spacing={2}
         direction='column'
         sx={{
-          my: 'auto',
-          p: 4,
-          maxWidth: '100%',
-          alignSelf: 'center',
-          justifyContent: 'center',
+          mx: 'auto',
+          width: '60%',
+          minWidth: 600,
         }}
       >
         {isSuccess ? (
-          categories?.map((category) => (
-            <div key={category.id}>
-              {category?.blog_posts !== undefined
-                ? category?.blog_posts.map((blog) => (
-                    <div key={blog.id}>
-                      <BLogCard blog={blog} />
-                    </div>
-                  ))
-                : null}
-            </div>
-          ))
+          <div>
+            {category?.blog_posts !== undefined &&
+            category?.blog_posts.length > 0 ? (
+              category?.blog_posts.map((blog) => (
+                <div key={blog.id}>
+                  <Stack
+                    spacing={2}
+                    direction='column'
+                    sx={{
+                      my: 'auto',
+                      p: 2,
+                      maxWidth: '100%',
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <BLogCard blog={blog} />
+                  </Stack>
+                </div>
+              ))
+            ) : (
+              <p>This Category has no content.</p>
+            )}
+          </div>
         ) : (
           <Spinner />
         )}

@@ -84,11 +84,11 @@ class CategoryPagination(PageNumberPagination):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoryMutationSerializer
-    lookup_field = 'name'
+    lookup_field = 'slug'
     # pagination_class = CategoryPagination
     filter_backends = [DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter]
-    filterset_fields = ['name', 'is_active']
+    filterset_fields = ['slug', 'is_active']
     search_fields = ['name', 'description']
     ordering_fields = '__all__'
 

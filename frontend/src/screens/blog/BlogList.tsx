@@ -6,7 +6,7 @@ import _ from 'lodash'
 import Spinner from '../../common/sharedComponents/Spinner'
 import { BLogCard } from './BLogCard'
 
-import { Box, Stack, TextField, Button, Pagination } from '@mui/material'
+import { Stack, TextField, Pagination } from '@mui/material'
 
 export interface IBlogListProps {}
 
@@ -24,13 +24,6 @@ function BlogList(props: IBlogListProps) {
     hangleChange(e)
   },
   500)
-
-  const handlePrev = () => {
-    data?.previous_page && setQuery({ ...query, page: data.previous_page })
-  }
-  const handleNext = () => {
-    data?.next_page && setQuery({ ...query, page: data.next_page })
-  }
 
   const handlePageChange = (event, value) => {
     setQuery({ ...query, page: value })
@@ -87,24 +80,6 @@ function BlogList(props: IBlogListProps) {
         ) : (
           <Spinner />
         )}
-        {/* <Stack
-          spacing={4}
-          direction='row'
-          sx={{
-            p: 2,
-            my: 'auto',
-            maxWidth: '100%',
-          }}
-        >
-          <Button
-            variant='contained'
-            color='secondary'
-            disabled={data?.previous_page === null}
-            onClick={handlePrev}
-            sx={{ width: '15ch' }}
-          >
-            Prev
-          </Button> */}
         <Stack
           spacing={4}
           direction='row'
@@ -121,16 +96,6 @@ function BlogList(props: IBlogListProps) {
             onChange={handlePageChange}
           />
         </Stack>
-        {/* <Button
-            variant='contained'
-            color='secondary'
-            disabled={data?.next_page === null}
-            onClick={handleNext}
-            sx={{ width: '15ch' }}
-          >
-            Next
-          </Button>
-        </Stack> */}
       </Stack>
     </>
   )

@@ -115,7 +115,7 @@ const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
                               <ListItem
                                 button
                                 onClick={() => {
-                                  handleBlog(category.name)
+                                  handleBlog(category.slug)
                                   close()
                                 }}
                               >
@@ -131,6 +131,11 @@ const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
                   )}
                 </Popup>
               </>
+            ) : null}
+            {auth.is_admin ? (
+              <Button color='inherit' onClick={() => navigate(`/category`)}>
+                Category
+              </Button>
             ) : null}
           </Stack>
           {auth.isAuthenticated ? (
