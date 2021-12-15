@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch } from '../../app/hooks'
 import { Auth, signout } from '../../features/auth/auth-slice'
-import { IProfile } from '../../app/api'
+import { IProfile, useCategoriesQuery } from '../../app/api'
 
 import {
   AppBar,
@@ -27,6 +27,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import PersonIcon from '@mui/icons-material/Person'
 import LoginIcon from '@mui/icons-material/Login'
 import LogoutIcon from '@mui/icons-material/Logout'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import { Fragment } from 'react'
 
 export interface IBSAppBarProps {
   appName: string
@@ -37,6 +39,9 @@ export interface IBSAppBarProps {
 const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+
+  const { data: categories = [], isSuccess } = useCategoriesQuery()
+
   const handleProfile = () => {
     navigate('/profile')
   }
@@ -48,6 +53,10 @@ const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
   const handleSignout = () => {
     dispatch(signout())
     navigate('/signin')
+  }
+
+  const handleBlog = (category) => {
+    navigate(`/blog/category/${category}`)
   }
 
   return (
@@ -72,9 +81,56 @@ const BSAppBar = ({ auth, appName, userData }: IBSAppBarProps) => {
           </Typography>
           <Stack direction='row' spacing={2} sx={{ mr: '5rem' }}>
             {auth.isAuthenticated ? (
-              <Button color='inherit' onClick={() => navigate(`/blog`)}>
-                Blog
-              </Button>
+              <>
+                <Popup
+                  trigger={
+                    <Button
+                      color='inherit'
+                      endIcon={<ArrowDropDownIcon fontSize='medium' />}
+                      onClick={() => navigate(`/blog`)}
+                    >
+                      Blog
+                    </Button>
+                  }
+                  closeOnDocumentClick
+                  mouseLeaveDelay={300}
+                  arrow={false}
+                  position='bottom right'
+                >
+                  {(close: Function) => (
+                    <List dense>
+                      <ListItem
+                        button
+                        onClick={() => {
+                          navigate('/blog')
+                          close()
+                        }}
+                      >
+                        <ListItemText>All</ListItemText>
+                      </ListItem>
+                      <Divider />
+                      {isSuccess
+                        ? categories?.map((category) => (
+                            <Fragment key={category.id}>
+                              <ListItem
+                                button
+                                onClick={() => {
+                                  handleBlog(category.name)
+                                  close()
+                                }}
+                              >
+                                <ListItemText
+                                  primary={category.name}
+                                ></ListItemText>
+                              </ListItem>
+                              <Divider />
+                            </Fragment>
+                          ))
+                        : null}
+                    </List>
+                  )}
+                </Popup>
+              </>
             ) : null}
           </Stack>
           {auth.isAuthenticated ? (

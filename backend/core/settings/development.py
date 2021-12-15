@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'user',
     'blog',
+    'django_filters',
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework',

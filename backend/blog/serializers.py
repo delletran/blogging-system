@@ -1,9 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.fields import ReadOnlyField
 
-from .models import Blog
+from .models import Blog, Category
 from user.serializers import UserSerializer
 
 
@@ -26,3 +25,26 @@ class BlogSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"{user} has already created a blog with this title.")
         return data
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    blog_posts = BlogSerializer(many=True)
+    # blog_posts = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class CategoryMutationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+    def to_representation(self, value):
+        if isinstance(value, Category):
+            serializer = CategorySerializer(value)
+        else:
+            raise Exception('Unexpected type of tagged object')
+        return serializer.data

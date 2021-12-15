@@ -11,3 +11,9 @@ export const formatHtml = (html: string | undefined): string => {
   return clean
 }
 
+
+export const strToTitle = (str: string | undefined): string => {
+  const titled: string = str !== undefined ? (str.charAt(0).toUpperCase() + str.slice(1)) : ''
+  return titled
+}
+

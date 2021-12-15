@@ -18,10 +18,12 @@ import {
   BlogCreate,
   BlogUpdate,
   BlogDelete,
-} from '../screens/blog'
+} from './../screens/blog'
+import { Category, CategoryBlogList } from './../screens/blog/category'
 
 import CKEditorTest from '../screens/test/CKEditorTest'
 import Tinymce from '../screens/test/Tinymce'
+
 export interface IAppRoutesProps {
   auth: Auth
   userData?: IProfile
@@ -36,9 +38,19 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
 
       <Route path='/blog' element={<Blog />} />
       <Route path='/blog/create' element={<BlogCreate />} />
+      <Route path='/blog/category' element={<Category />} />
+      <Route path='/blog/category/:name' element={<CategoryBlogList />} />
       <Route path='/blog/:slug' element={<BlogDetails />} />
       <Route path='/blog/:slug/update' element={<BlogUpdate />} />
       <Route path='/blog/:slug/delete' element={<BlogDelete />} />
+
+      {/* <Route path='/blog-category' element={<Category />} />
+      <Route path='/blog-category/:name' element={<Category />} /> */}
+      {/* <Route path='/category/create' element={<CategoryCreate />} />
+      <Route path='/category/:name' element={<CategoryDetails />} />
+      <Route path='/category/:name/update' element={<CategoryUpdate />} />
+      <Route path='/category/:name/delete' element={<CategoryDelete />} /> */}
+
       <Route
         path='/blog/create'
         element={

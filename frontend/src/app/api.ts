@@ -34,6 +34,14 @@ export interface IBlog {
   published_at?: Date
   created_at?: Date
 }
+export interface IPaginatedBlog {
+  next_page: number | null
+  previous_page: number | null
+  current_page: number
+  total_data: number
+  total_pages: number
+  results: IBlog[];
+}
 export interface IBlogForm {
   title: string
   description?: string
@@ -41,6 +49,17 @@ export interface IBlogForm {
   tags?: []
   slug: string
   published_at?: Date
+}
+export interface ICategory {
+  id: string
+  name: string
+  is_active: boolean
+  blog_posts?: IBlog[]
+}
+export interface ICategoryForm {
+  name: string
+  is_active: boolean
+  blog_posts?: []
 }
 export interface IUpdateFormProps {
   user: number
@@ -67,7 +86,7 @@ export const appApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['User', 'Profile', 'Token', 'Blog'],
+  tagTypes: ['User', 'Profile', 'Token', 'Blog', 'Categories'],
   endpoints(builder) {
     return {
       users: builder.query<IUser[], void>({
@@ -130,8 +149,12 @@ export const appApi = createApi({
           body: credentials
         }),
       }),
-      blogs: builder.query<IBlog[], void>({
-        query: () => `/blogs/`,
+      blogs: builder.query<IBlog[], { search: string, slug: string[] }>({
+        query: ({ search, slug }) => `/blogs/?search=${search}&slug__in=${slug.join("%2c")}`,
+        providesTags: ['Blog']
+      }),
+      paginatedBlogs: builder.query<IPaginatedBlog, { page: number, search: string, slug: string[] }>({
+        query: ({ page = 1, search, slug }) => `/blogs/?page=${page}&search=${search}&slug__in=${slug.join("%2c")}`,
         providesTags: ['Blog']
       }),
       blog: builder.query<IBlog, string>({
@@ -161,6 +184,37 @@ export const appApi = createApi({
         }),
         invalidatesTags: ['Blog']
       }),
+      categories: builder.query<ICategory[], void | string>({
+        query: (name = '') => `/categories/?name=${name}`,
+        providesTags: ['Categories']
+      }),
+      category: builder.query<ICategory, string>({
+        query: () => `categories/`,
+        providesTags: ['Categories']
+      }),
+      categoryCreate: builder.mutation<ICategory, ICategoryForm>({
+        query: (categoryData) => ({
+          url: `/categories/`,
+          method: "POST",
+          body: categoryData
+        }),
+        invalidatesTags: ['Categories']
+      }),
+      categoryUpdate: builder.mutation<ICategory, { id: number, categoryData: ICategoryForm }>({
+        query: ({ id, categoryData }) => ({
+          url: `/categories/${id}/`,
+          method: "PUT",
+          body: categoryData
+        }),
+        invalidatesTags: ['Categories']
+      }),
+      categoryDelete: builder.mutation<ICategory, number>({
+        query: (id = 0) => ({
+          url: `/categories/${id}/`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ['Categories']
+      }),
     }
   },
 })
@@ -173,11 +227,19 @@ export const {
   useSignupMutation,
   useSigninMutation,
   useUpdateProfileMutation,
+
   useBlogsQuery,
+  usePaginatedBlogsQuery,
   useBlogQuery,
   useBlogCreateMutation,
   useBlogUpdateMutation,
-  useBlogDeleteMutation
+  useBlogDeleteMutation,
+
+  useCategoriesQuery,
+  useCategoryQuery,
+  useCategoryCreateMutation,
+  useCategoryUpdateMutation,
+  useCategoryDeleteMutation,
 } = appApi
 
 export default appApi
