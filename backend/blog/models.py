@@ -21,8 +21,10 @@ class Blog(models.Model):
     slug = models.SlugField(_("slug"), blank=True, null=True)
     author = models.ForeignKey(USER, verbose_name=_(
         "Blog Author"), blank=True, null=True, on_delete=models.CASCADE)
-    categories = models.ManyToManyField(
-        "Category", blank=True,  verbose_name=_("Categories"))
+    category = models.ForeignKey('Category', verbose_name=_(
+        "Blog Category"), blank=True, null=True, on_delete=models.CASCADE)
+    # categories = models.ManyToManyField(
+    #     "Category", blank=True,  verbose_name=_("Categories"))
     published_at = models.DateTimeField(
         auto_now_add=False, auto_now=False, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -41,7 +43,7 @@ class Blog(models.Model):
         verbose_name_plural = _("Blogs")
 
     def __str__(self):
-        return self.title
+        return self.slug
 
     def get_absolute_url(self):
         return reverse("Blog_detail", kwargs={"pk": self.pk})
@@ -64,16 +66,22 @@ class Tag(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=120)
+
+    name = models.CharField(max_length=120, unique=True)
     description = models.TextField(
         _("Category description"), blank=True, null=True)
     is_active = models.BooleanField(_("Active category"), default=True)
+    slug = models.SlugField(_("category slug"), blank=True, null=True)
     blog_posts = models.ManyToManyField(
         "Blog", related_name='blog_posts', blank=True)
 
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

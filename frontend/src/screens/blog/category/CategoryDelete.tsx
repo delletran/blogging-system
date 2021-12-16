@@ -1,24 +1,24 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
-import { useBlogDeleteMutation } from '../../app/api'
+import { useCategoryDeleteMutation } from '../../../app/api'
 
 import { Typography, Button } from '@mui/material'
 import { Stack } from '@mui/material'
 
 // TODO: Change to Modal
 
-const BlogDelete = () => {
+const CategoryDelete = () => {
   let params = useParams()
   const navigate = useNavigate()
-  const [deleteBlog, { isSuccess }] = useBlogDeleteMutation()
+  const [deleteCategory, { isSuccess }] = useCategoryDeleteMutation()
 
-  const handlePostBlog = (blogSlug: string | undefined) => {
-    blogSlug !== undefined && deleteBlog(blogSlug)
+  const handleDeleteCategory = (categorySlug: string | undefined) => {
+    categorySlug !== undefined && deleteCategory(categorySlug)
   }
 
   useEffect(() => {
-    isSuccess && setTimeout(() => navigate('/blog'), 1000)
+    isSuccess && setTimeout(() => navigate('/category'), 1000)
   }, [isSuccess, navigate])
 
   return (
@@ -37,12 +37,12 @@ const BlogDelete = () => {
       </Typography>
       <br />
       {isSuccess ? (
-        <p>Blogpost Deleted!</p>
+        <p>Categorypost Deleted!</p>
       ) : (
         <Button
           variant='contained'
           type='submit'
-          onClick={() => handlePostBlog(params?.slug)}
+          onClick={() => handleDeleteCategory(params?.name)}
           sx={{ width: 120, alignSelf: 'center' }}
         >
           Delete
@@ -52,4 +52,4 @@ const BlogDelete = () => {
   )
 }
 
-export { BlogDelete }
+export { CategoryDelete }

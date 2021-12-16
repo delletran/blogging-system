@@ -18,10 +18,19 @@ import {
   BlogCreate,
   BlogUpdate,
   BlogDelete,
-} from '../screens/blog'
+} from './../screens/blog'
+import {
+  Category,
+  CategoryBlogList,
+  CategoryCreate,
+  CategoryList,
+  CategoryUpdate,
+  CategoryDelete,
+} from './../screens/blog/category'
 
 import CKEditorTest from '../screens/test/CKEditorTest'
 import Tinymce from '../screens/test/Tinymce'
+
 export interface IAppRoutesProps {
   auth: Auth
   userData?: IProfile
@@ -33,12 +42,42 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
       <Route path='/' element={<Homepage />} />
       <Route path='/signup' element={<UserSignup />} />
       <Route path='/signin' element={<UserSignin auth={auth} />} />
-
       <Route path='/blog' element={<Blog />} />
       <Route path='/blog/create' element={<BlogCreate />} />
+      <Route path='/blog/category' element={<Category />} />
+      <Route path='/blog/category/:name' element={<CategoryBlogList />} />
       <Route path='/blog/:slug' element={<BlogDetails />} />
       <Route path='/blog/:slug/update' element={<BlogUpdate />} />
-      <Route path='/blog/:slug/delete' element={<BlogDelete />} />
+      <Route
+        path='/blog/:slug/delete'
+        element={
+          <AdminRequiredRoute auth={auth}>
+            <BlogDelete />
+          </AdminRequiredRoute>
+        }
+      />
+      <Route
+        path='/category/create'
+        element={
+          <AdminRequiredRoute auth={auth}>
+            <CategoryCreate />
+          </AdminRequiredRoute>
+        }
+      />
+      <Route
+        path='/category/'
+        element={
+          <AdminRequiredRoute auth={auth}>
+            <CategoryList />
+          </AdminRequiredRoute>
+        }
+      />
+      <Route path='/category/:name/update' element={<CategoryUpdate />} />
+      <Route path='/category/:name/delete' element={<CategoryDelete />} />
+      {/*
+      <Route path='/category/:name' element={<CategoryDetails />} />
+      <Route path='/category/:name/update' element={<CategoryUpdate />} />
+      <Route path='/category/:name/delete' element={<CategoryDelete />} /> */}
       <Route
         path='/blog/create'
         element={
@@ -47,7 +86,6 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
           </AdminRequiredRoute>
         }
       />
-
       <Route path='/ck-test' element={<CKEditorTest />} />
       <Route path='/tinymce-test' element={<Tinymce />} />
       <Route
