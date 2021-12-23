@@ -6,10 +6,11 @@ export interface IEditorProps {
   state: object
   setState: Dispatch<SetStateAction<any>>
   property: string
+  _data: string
 }
 
-function Editor({ state, setState, property }: IEditorProps) {
-  const inintialData = ''
+function Editor({ state, setState, property, _data = '' }: IEditorProps) {
+  const inintialData = _data
 
   return (
     <CKEditor
