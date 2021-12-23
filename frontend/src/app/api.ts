@@ -23,6 +23,13 @@ export interface IProfile {
   avatar?: File
 }
 
+export interface IUpdateFormProps {
+  user: number
+  first_name: string
+  last_name: string
+  // avatar: File
+}
+
 export interface IBlog {
   id: number
   title: string
@@ -51,7 +58,7 @@ export interface IBlogForm {
   published_at?: Date
 }
 export interface ICategory {
-  id: string
+  id: number
   name: string
   description: string
   is_active: boolean
@@ -64,14 +71,52 @@ export interface ICategoryForm {
   is_active: boolean
   blog_posts?: []
 }
-export interface IUpdateFormProps {
-  user: number
-  first_name: string
-  last_name: string
-  // avatar: File
+
+export interface IComment {
+  id: number
+  author: IUser | null
+  content: string
+  uuid: string
+  up_votes: number
+  is_active: boolean
+  created_at: Date
+  update_at: Date
+  post_id: number
 }
 
+export interface ICommentForm {
+  content: string
+  up_votes: number
+  is_active: boolean
+  post_id: number
+}
+export interface IReply {
+  id: number
+  author: IUser | null
+  content: string
+  uuid: string
+  up_votes: number
+  is_active: boolean
+  created_at: Date
+  update_at: Date
+  post_id: number
+  object_id: number | null
+  comment_id: number | null
+  reply_id: number | null
+  reply_to: number
+}
 
+export interface IReplyForm {
+  content: string
+  up_votes: number
+  is_active: boolean
+  post_id: number
+  object_id: number | null
+  reply_to: number
+}
+export interface IReplyUpvote {
+  up_votes: number
+}
 export interface Credentials {
   email: string;
   password: string;
@@ -89,7 +134,7 @@ export const appApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['User', 'Profile', 'Token', 'Blog', 'Categories'],
+  tagTypes: ['User', 'Profile', 'Token', 'Blog', 'Category', 'Comment', 'Reply'],
   endpoints(builder) {
     return {
       users: builder.query<IUser[], void>({
@@ -189,11 +234,11 @@ export const appApi = createApi({
       }),
       categories: builder.query<ICategory[], void | string>({
         query: (name = '') => `/categories/${name}`,
-        providesTags: ['Categories']
+        providesTags: ['Category']
       }),
       category: builder.query<ICategory, string>({
         query: (slug) => `categories/${slug}`,
-        providesTags: ['Categories']
+        providesTags: ['Category']
       }),
       categoryCreate: builder.mutation<ICategory, ICategoryForm>({
         query: (categoryData) => ({
@@ -201,7 +246,7 @@ export const appApi = createApi({
           method: "POST",
           body: categoryData
         }),
-        invalidatesTags: ['Categories']
+        invalidatesTags: ['Category']
       }),
       categoryUpdate: builder.mutation<ICategory, { slug: string, categoryData: ICategoryForm }>({
         query: ({ slug, categoryData }) => ({
@@ -209,14 +254,82 @@ export const appApi = createApi({
           method: "PUT",
           body: categoryData
         }),
-        invalidatesTags: ['Categories']
+        invalidatesTags: ['Category']
       }),
       categoryDelete: builder.mutation<ICategory, string>({
         query: (slug = '') => ({
           url: `/categories/${slug}`,
           method: "DELETE",
         }),
-        invalidatesTags: ['Categories']
+        invalidatesTags: ['Category']
+      }),
+      comments: builder.query<IComment[], number>({
+        query: (postId) => `/comments/?post_id=${postId}`,
+        providesTags: (result, error, arg) =>
+          result
+            ? [...result.map(({ id }) => ({ type: 'Comment' as const, id })), 'Comment']
+            : ['Comment'],
+      }),
+      comment: builder.query<IComment, number>({
+        query: (id) => `comments/${id}`,
+        providesTags: (returnVal, args) => [{ type: 'Comment' }],
+      }),
+      commentCreate: builder.mutation<IComment, ICommentForm>({
+        query: (commentData) => ({
+          url: `/comments/`,
+          method: "POST",
+          body: commentData
+        }),
+        invalidatesTags: ['Comment']
+      }),
+      commentUpdate: builder.mutation<IComment, { id: number, commentData: ICommentForm }>({
+        query: ({ id, commentData }) => ({
+          url: `/comments/${id}/`,
+          method: "PUT",
+          body: commentData
+        }),
+        invalidatesTags: (result, error, arg) => [{ type: 'Comment', id: arg.id }],
+      }),
+      commentDelete: builder.mutation<IComment, number>({
+        query: (id = 0) => ({
+          url: `/comments/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ['Comment']
+      }),
+      replies: builder.query<IReply[], { commentId: number, replyTo: number }>({
+        query: ({ commentId, replyTo }) => `/replies/?object_id=${commentId}&reply_to=${replyTo}`,
+        providesTags: (result, error, arg) =>
+          result
+            ? [...result.map(({ id }) => ({ type: 'Reply' as const, id })), 'Reply']
+            : ['Reply'],
+      }),
+      reply: builder.query<IReply, string>({
+        query: (uuid) => `replies/${uuid}`,
+        providesTags: ['Reply']
+      }),
+      replyCreate: builder.mutation<IReply, IReplyForm>({
+        query: (replyData) => ({
+          url: `/replies/`,
+          method: "POST",
+          body: replyData
+        }),
+        invalidatesTags: ['Reply']
+      }),
+      replyUpdate: builder.mutation<IReply, { id: number, replyData: ICommentForm }>({
+        query: ({ id, replyData }) => ({
+          url: `/replies/${id}/`,
+          method: "PUT",
+          body: replyData
+        }),
+        invalidatesTags: (result, error, arg) => [{ type: 'Reply', id: arg.id }],
+      }),
+      replyDelete: builder.mutation<IReply, number>({
+        query: (id = 0) => ({
+          url: `/replies/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ['Reply']
       }),
     }
   },
@@ -243,6 +356,18 @@ export const {
   useCategoryCreateMutation,
   useCategoryUpdateMutation,
   useCategoryDeleteMutation,
+
+  useCommentsQuery,
+  useCommentQuery,
+  useCommentCreateMutation,
+  useCommentUpdateMutation,
+  useCommentDeleteMutation,
+
+  useRepliesQuery,
+  useReplyQuery,
+  useReplyUpdateMutation,
+  useReplyCreateMutation,
+  useReplyDeleteMutation
 } = appApi
 
 export default appApi

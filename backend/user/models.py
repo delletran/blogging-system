@@ -22,7 +22,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(
         auto_now_add=False, auto_now=False, default=timezone.now)
-    update_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
     objects = CustomUserManager()
 

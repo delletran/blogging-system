@@ -14,7 +14,9 @@ export const store = configureStore({
     counter: counterReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(userApi.middleware),
 })
 
 export type AppDispatch = typeof store.dispatch

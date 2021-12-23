@@ -30,6 +30,8 @@ import {
 
 import CKEditorTest from '../screens/test/CKEditorTest'
 import Tinymce from '../screens/test/Tinymce'
+import Comment from '../screens/blog/comment/Comment'
+import { CommentList } from '../screens/blog/comment'
 
 export interface IAppRoutesProps {
   auth: Auth
@@ -46,7 +48,7 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
       <Route path='/blog/create' element={<BlogCreate />} />
       <Route path='/blog/category' element={<Category />} />
       <Route path='/blog/category/:name' element={<CategoryBlogList />} />
-      <Route path='/blog/:slug' element={<BlogDetails />} />
+      <Route path='/blog/:slug' element={<BlogDetails auth={auth} />} />
       <Route path='/blog/:slug/update' element={<BlogUpdate />} />
       <Route
         path='/blog/:slug/delete'
@@ -74,10 +76,7 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
       />
       <Route path='/category/:name/update' element={<CategoryUpdate />} />
       <Route path='/category/:name/delete' element={<CategoryDelete />} />
-      {/*
-      <Route path='/category/:name' element={<CategoryDetails />} />
-      <Route path='/category/:name/update' element={<CategoryUpdate />} />
-      <Route path='/category/:name/delete' element={<CategoryDelete />} /> */}
+
       <Route
         path='/blog/create'
         element={
@@ -88,6 +87,8 @@ const AppRoutes = ({ auth, userData }: IAppRoutesProps) => {
       />
       <Route path='/ck-test' element={<CKEditorTest />} />
       <Route path='/tinymce-test' element={<Tinymce />} />
+      <Route path='/comment' element={<Comment />} />
+      <Route path='/comment-list' element={<CommentList />} />
       <Route
         path='/profile'
         element={

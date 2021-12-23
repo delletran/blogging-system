@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 
-import { useBlogUpdateMutation } from '../../app/api'
+import { useBlogUpdateMutation, useBlogQuery } from '../../app/api'
 import { IBlogForm } from '../../app/api'
+import { string_to_slug } from '../../common/helper'
 
 import Editor from '../../common/sharedComponents/Editor'
 
@@ -11,15 +12,18 @@ import { Stack } from '@mui/material'
 
 const BlogUpdate = () => {
   let params = useParams()
+  const navigate = useNavigate()
+
+  const [updateBlog, { isSuccess: updateSuccess }] = useBlogUpdateMutation()
+  const { data: blog = [] } = useBlogQuery(params?.slug || '')
   const initialState: IBlogForm = {
     title: '',
     description: '',
     body: '',
     tags: [],
     slug: '',
+    ...blog,
   }
-
-  const [updateBlog, { isSuccess }] = useBlogUpdateMutation()
   const [blogData, setBlogData] = useState(initialState)
 
   const hangleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +34,11 @@ const BlogUpdate = () => {
   const handlePostBlog = (blogSlug: string | undefined) => {
     blogSlug !== undefined && updateBlog({ blogSlug, blogData })
   }
+
+  useEffect(() => {
+    updateSuccess &&
+      setTimeout(() => navigate(`/blog/${string_to_slug(blogData.title)}`), 500)
+  }, [updateSuccess, navigate, blogData])
 
   return (
     <Stack
@@ -60,6 +69,7 @@ const BlogUpdate = () => {
             label='Title'
             name='title'
             type='text'
+            value={blogData.title || ''}
             onChange={hangleChange}
             sx={{ width: '40%', alignSelf: 'center' }}
             variant='standard'
@@ -69,6 +79,7 @@ const BlogUpdate = () => {
             label='Description'
             name='description'
             type='text'
+            value={blogData.description || ''}
             onChange={hangleChange}
             sx={{ width: '40%', alignSelf: 'center' }}
             variant='standard'
@@ -76,17 +87,23 @@ const BlogUpdate = () => {
           <br />
           <Typography variant='h5'>Body</Typography>
           <br />
-          <Editor state={blogData} setState={setBlogData} property={'body'} />
+          <Editor
+            state={blogData}
+            setState={setBlogData}
+            property={'body'}
+            _data={blogData.body || ''}
+          />
 
           <Button
             variant='contained'
             type='submit'
+            disabled={updateSuccess}
             onClick={() => handlePostBlog(params?.slug)}
             sx={{ width: 120, alignSelf: 'center' }}
           >
             Update
           </Button>
-          {isSuccess ? <p>Blogpost Saved!</p> : null}
+          {updateSuccess ? <p>Blogpost Saved!</p> : null}
         </Stack>
       </form>
     </Stack>

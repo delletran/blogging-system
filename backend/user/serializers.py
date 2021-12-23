@@ -50,26 +50,11 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-# class ProfileSerializer(serializers.ModelSerializer):
-#     username = UserSerializer(read_only=True)
-
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'email', 'is_admin']
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
         fields = '__all__'
-
-    # def to_representation(self, value):
-    #     if isinstance(value, UserProfile):
-    #         serializer = ProfileSerializer(value)
-    #     else:
-    #         raise Exception('Unexpected type of tagged object')
-    #     return serializer.data
 
 
 class ObtainTokenPairSerializer(TokenObtainPairSerializer):
