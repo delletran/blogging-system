@@ -18,23 +18,25 @@ class Blog(models.Model):
     description = models.TextField(
         _("blog description"), blank=True, null=True)
     body = RichTextField(blank=True, null=True)
-    slug = models.SlugField(_("slug"), blank=True, null=True)
+    slug = models.SlugField(_("slug"), max_length=120, blank=True, null=True)
     author = models.ForeignKey(USER, verbose_name=_(
         "Blog Author"), blank=True, null=True, on_delete=models.CASCADE)
     category = models.ForeignKey('Category', verbose_name=_(
         "Blog Category"), blank=True, null=True, on_delete=models.CASCADE)
     # categories = models.ManyToManyField(
     #     "Category", blank=True,  verbose_name=_("Categories"))
+    shares = models.PositiveIntegerField(default=0)
+    bookmarks = models.PositiveIntegerField(default=0)
     published_at = models.DateTimeField(
         auto_now_add=False, auto_now=False, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=False, auto_now=True)
-    update_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         _suffix = str(self.author.id) + \
             (get_random_string(3, '0123456789'))
         slug_suffix = (urlsafe_base64_encode(force_bytes(_suffix)))
-        self.slug = slugify(f'{self.title}-{slug_suffix}')
+        self.slug = slugify(f'{self.title}')
         super(Blog, self).save(*args, **kwargs)
 
     class Meta:

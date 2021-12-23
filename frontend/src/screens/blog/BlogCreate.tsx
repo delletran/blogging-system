@@ -74,7 +74,12 @@ const BlogCreate = () => {
           <br />
           <Typography variant='h5'>Body</Typography>
           <br />
-          <Editor state={blogData} setState={setBlogData} property={'body'} />
+          <Editor
+            state={blogData}
+            setState={setBlogData}
+            property={'body'}
+            _data={''}
+          />
 
           <Button
             variant='contained'
